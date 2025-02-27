@@ -1,6 +1,5 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
@@ -9,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import AlertDialogComponent from '~/components/AlertDialogComponent';
 import Greeting from '~/components/Greeting';
 import {
-  formSchema,
+  teamResolver,
   TeamDefaultValue,
   TeamSchemaType,
 } from '~/components/schemas';
@@ -21,7 +20,7 @@ export default function Home() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const form = useForm<TeamSchemaType>({
-    resolver: zodResolver(formSchema),
+    resolver: teamResolver,
     defaultValues: TeamDefaultValue,
   });
 

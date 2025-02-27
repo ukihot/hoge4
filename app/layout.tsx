@@ -5,7 +5,6 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { ThemeProvider } from 'next-themes';
 
 import { AppSidebar } from '~/components/app-sidebar';
-import { Footer } from '~/components/footer';
 
 import { SidebarProvider } from './components/ui/sidebar';
 
@@ -32,7 +31,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning lang="ja">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col `}
       >
         <ThemeProvider
           attribute="class"
@@ -42,9 +41,13 @@ export default function RootLayout({
         >
           <SidebarProvider>
             <AppSidebar />
-            <main className="flex-grow">{children}</main>
+            <div className="flex-grow flex flex-col">
+              <main className="flex-grow">{children}</main>
+              <footer className="flex gap-6 flex-wrap items-center justify-center p-4 bg-slate-800 text-white h-[40px] mt-4">
+                <p>&copy; 2025 Hippolytica. All rights reserved.</p>
+              </footer>
+            </div>
           </SidebarProvider>
-          <Footer />
         </ThemeProvider>
       </body>
     </html>

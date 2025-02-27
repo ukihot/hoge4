@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { v4 as uuidv4 } from 'uuid';
 import * as z from 'zod';
 
@@ -52,43 +53,7 @@ const playerSchema = z.object({
   ),
 });
 
-const matchEventSchema = z.object({
-  eventId: z.string().uuid(),
-  raiderId: z.string().uuid(),
-  occurredAt: z.string().regex(/^\d+:\d+$/, {
-    message: 'OccurredAt must be in the format of minutes:seconds.',
-  }),
-  raidDuration: z.preprocess(
-    (v) => Number(v),
-    z
-      .number()
-      .int()
-      .min(0, { message: 'Raid duration must be between 0 and 30 seconds.' })
-      .max(30, { message: 'Raid duration must be between 0 and 30 seconds.' })
-  ),
-  scoreBefore: z.preprocess((v) => Number(v), z.number().int()),
-  emptyCount: z.preprocess(
-    (v) => Number(v),
-    z
-      .number()
-      .int()
-      .min(0, { message: 'Empty count must be 0, 1, or 2.' })
-      .max(2, { message: 'Empty count must be 0, 1, or 2.' })
-  ),
-  opponentsCount: z.preprocess(
-    (v) => Number(v),
-    z
-      .number()
-      .int()
-      .min(1, { message: 'Opponents count must be between 1 and 7.' })
-      .max(7, { message: 'Opponents count must be between 1 and 7.' })
-  ),
-  isSuccess: z.boolean(),
-  pointGained: z.preprocess((v) => Number(v), z.number().int()),
-  pointLost: z.preprocess((v) => Number(v), z.number().int()),
-});
-
-const formSchema = z.object({
+const teamSchema = z.object({
   dog_team_name: z.string().min(2, {
     message: 'Team name must be at least 2 characters.',
   }),
@@ -99,7 +64,8 @@ const formSchema = z.object({
   cat_players: z.array(playerSchema),
 });
 
-export type TeamSchemaType = z.infer<typeof formSchema>;
+export type TeamSchemaType = z.infer<typeof teamSchema>;
+export const teamResolver = zodResolver(teamSchema);
 
 export const PlayerDefaultValue = {
   id: uuidv4(),
@@ -118,17 +84,20 @@ export const TeamDefaultValue = {
   cat_players: [PlayerDefaultValue],
 };
 
-export type MatchEventSchemaType = z.infer<typeof matchEventSchema>;
+const matchEventSchema = z.object({
+  raiderId: z.string().uuid(),
+  isSuccess: z.boolean(),
+  defenderIds: z.array(z.string()),
+  hasBonusPoints: z.boolean(),
+});
+
+export const matchEventResolver = zodResolver(matchEventSchema);
 
 export const MatchEventDefaultValue = {
-  eventId: uuidv4(),
-  raiderId: uuidv4(),
-  occurredAt: '0:0',
-  raidDuration: 0,
-  scoreBefore: 0,
-  emptyCount: 0,
-  opponentsCount: 7,
+  raiderId: undefined,
   isSuccess: false,
-  pointGained: 0,
-  pointLost: 0,
+  defenderIds: [],
+  hasBonusPoints: false,
 };
+
+export type MatchEventSchemaType = z.infer<typeof matchEventSchema>;
